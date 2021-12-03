@@ -24,7 +24,7 @@ if __name__ == '__main__':
     # Lecture image et affichage
     #==============================================================================
     image = Image()
-    image.load(path_to_assets + 'test2.JPG')
+    image.load(path_to_assets + 'test3.JPG')
     image.display("Exemple d'image")
 
     #==============================================================================
@@ -43,7 +43,7 @@ if __name__ == '__main__':
     #==============================================================================
     # Redimensionnement de l'image et affichage
     #==============================================================================
-    image_resizee = image_localisee.resize(100, 500)
+    image_resizee = image_localisee.resize(100, 50)
     image_resizee.display("Image redimensionee")
 
     #==============================================================================
