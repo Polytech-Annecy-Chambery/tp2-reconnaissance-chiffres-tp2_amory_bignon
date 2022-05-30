@@ -9,10 +9,10 @@ Modified By: Ammar Mian
 -----
 Copyright (c) 2021 Université Savoie Mont-Blanc
 '''
+
 import matplotlib.pyplot as plt
 from image import Image
 from reconnaissance import reconnaissance_chiffre, lecture_modeles
-
 
 if __name__ == '__main__':
 
@@ -24,35 +24,31 @@ if __name__ == '__main__':
     # Lecture image et affichage
     #==============================================================================
     image = Image()
-    image.load(path_to_assets + 'test7.JPG')
-    #image.display("Exemple d'image")
+    image.load(path_to_assets + 'Belgique2eP.JPG')
+    image.display("Exemple d'image")
 
     #==============================================================================
     # Binarisation de l'image et affichage
     #==============================================================================
-    S = 20
+    S = 70
     image_binarisee = image.binarisation(S)
-    #image_binarisee.display("Image binarisee")
+    image_binarisee.display("Image binarisee")
 
     #==============================================================================
     # Localisation de l'image et affichage
     #==============================================================================
     image_localisee = image_binarisee.localisation()
-    #image_localisee.display("Image localisee")
+    image_localisee.display("Image localisee")
 
     #==============================================================================
     # Redimensionnement de l'image et affichage
     #==============================================================================
-    image_resizee = image_localisee.resize(100, 500)
-    #image_resizee.display("Image redimensionee")
+    image_resizee = image_localisee.resize(100, 50)
+    image_resizee.display("Image redimensionee")
 
     #==============================================================================
     # Lecture modeles et reconnaissance
     #==============================================================================
     liste_modeles = lecture_modeles(path_to_assets)
-    chiffre = reconnaissance_chiffre(image, liste_modeles,220)
+    chiffre = reconnaissance_chiffre(image, liste_modeles, 70)
     print("Le chiffre reconnu est : ", chiffre)
-    """input()"""
-    
-    
-  

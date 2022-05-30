@@ -25,7 +25,7 @@ class Image:
     def load(self, file_name):
         """ Lecture d'un image a partir d'un fichier de nom "file_name"""
         self.pixels = io.imread(file_name)
-        self.H,self.W = self.pixels.shape 
+        self.H,self.W,_ = self.pixels.shape 
         print("lecture image : " + file_name + " (" + str(self.H) + "x" + str(self.W) + ")")
 
 
@@ -39,66 +39,77 @@ class Image:
             print("L'image est vide. Rien à afficher")
 
 
-    #==============================================================================
+    #=========================================================================
     # Methode de binarisation
     # 2 parametres :
     #   self : l'image a binariser
     #   S : le seuil de binarisation
     #   on retourne une nouvelle image binarisee
-    #==============================================================================
+    #=========================================================================
     def binarisation(self, S):
-        img_bin = Image()
-        img_bin.set_pixels(np.zeros((self.H, self.W), dtype=np.uint8))
+        im_bin = Image()
+        im_bin.set_pixels(np.zeros((self.H, self.W), dtype=np.uint8))
+        for i in range(self.H):
+            for j in range(self.W):
+                if self.pixels[i][j].any() <= S:
+                    im_bin.pixels[i][j] = 0
+                else:
+                    im_bin.pixels[i][j] = 255
+        return im_bin
 
-        for y in range(len(self.pixels)):
-            for x in range(len(self.pixels[y])):
-                if self.pixels[y][x] >= S: # Est ce que le seuil est inclut ou exclu ?
-                    img_bin.pixels[y][x] = 255
 
-        return img_bin
-
-
-    #==============================================================================
+    #=========================================================================
     # Dans une image binaire contenant une forme noire sur un fond blanc
     # la methode 'localisation' permet de limiter l'image au rectangle englobant
     # la forme noire
     # 1 parametre :
     #   self : l'image binaire que l'on veut recadrer
     #   on retourne une nouvelle image recadree
-    #==============================================================================
+    #=========================================================================
     def localisation(self):
-        
-        x_min = min(np.where(self.pixels==0)[1])
-        x_max = max(np.where(self.pixels==0)[1])
-      
-        y_min = min(np.where(self.pixels==0)[0])
-        y_max = max(np.where(self.pixels==0)[0])
-      
-     
-        
-     
-        new_img = Image()
-        new_img.set_pixels(np.zeros((y_max-y_min+1, x_max-x_min+1)))
-        new_img.pixels=np.array(self.pixels[y_min:(y_max+1),x_min:(x_max+1)])
-        return new_img
+        # im_bin = self.binarisation(self, S=128)
+        im_recadree = Image()
+        L_min, L_max = self.H, 0
+        C_min, C_max = self.W, 0
+        for i in range(self.H):
+            for j in range(self.W):
+                if self.pixels[i][j] == 0:
+                    if i < L_min:
+                        L_min = i
+                    if i > L_max:
+                        L_max = i
+                    if j < C_min:
+                        C_min = j
+                    if j > C_max:
+                        C_max = j
+        im_recadree.set_pixels(self.pixels[L_min:L_max+1, C_min:C_max+1])
+                    
+        return im_recadree
 
-    #==============================================================================
+    #=========================================================================
     # Methode de redimensionnement d'image
-    #==============================================================================
+    #=========================================================================
     def resize(self, new_H, new_W):
-        i = Image()
-        pixels_resized = resize(self.pixels, (new_H, new_W),0)
-        i.set_pixels(np.uint8(pixels_resized*255))
-        return i
+        im_resized = Image()
+        pix_resized = resize(self.pixels, (new_H,new_W), 0)
+        pix_resized_int = np.uint8(pix_resized*255)
+        im_resized.set_pixels(pix_resized_int)
+        return im_resized
 
 
-    #==============================================================================
+
+    #=========================================================================
     # Methode de mesure de similitude entre l'image self et un modele im
-    #==============================================================================
+    #=========================================================================
     def similitude(self, im):
-        img_sub = self.pixels - im.pixels
-        nb_non_zero = np.count_nonzero(img_sub)
-        nb_pixels = self.pixels.size
-
-        return (nb_pixels-nb_non_zero)/nb_pixels
+        image_resize=self.resize(im.H, im.W)
+        pix_semblables = 0
+        pix1 = im.pixels
+        pix2 = image_resize.pixels
+        for i in range(image_resize.H):
+            for j in range(image_resize.W):
+                if pix1[i][j] == pix2[i][j]:
+                    pix_semblables += 1
+        return pix_semblables/(image_resize.H * image_resize.W)
+                    
 
